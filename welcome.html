@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script type="text/javascript" src="welcomepage.js"></script> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello</title>
+    <title>Welcome</title>
 </head>
 <body>
-    <h1>Hello there HEY</h1>
+    <h1>Welcome to Ataxx</h1>
+    <div>Game is player-to player mode. Fill in the player names below to begin. <br><br></div>
+    <form action="process.php" method="post">
+        <label for="p1inputbox">Player 1</label>  
+            <input type="text" name="player1box" id="p1inputbox" oninput="textboxChanged()">
+            <br><br><br>
+            <label for="p2inputbox">Player 2</label>
+            <input type="text" name="player2box" id="p2inputbox" oninput="textboxChanged()">
+            <br><br><br>
+        <input type="submit" id="playBtn" value="Play Game" disabled>
+    </form>      
 </body>
 </html>
