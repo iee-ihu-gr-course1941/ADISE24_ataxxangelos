@@ -1,30 +1,60 @@
 <?php
-// 1. Start the session (if needed)
-session_start();
+require_once('lib/dbconnect.php');
 
-// 2. Include database connection file
-require_once('lib/dbconnect.php');  // Assuming you have a connection file to your DB
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $player1 = sanitize_input($_POST['player1box']);
+    $player2 = sanitize_input($_POST['player2box']);
+    $layout = sanitize_input($_POST['layout']);
+    
+    update_players($player1, $player2);
 
-// 3. Check if the form was submitted and the player names are set
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['player1box']) && isset($_POST['player2box'])) {
-    // 4. Get the player names from the form
-    $player1 = $_POST['player1box'];
-    $player2 = $_POST['player2box'];
+    update_board_layout($layout);
 
-    // 5. Sanitize the input to prevent SQL Injection
-    $player1 = mysqli_real_escape_string($mysqli, $player1);
-    $player2 = mysqli_real_escape_string($mysqli, $player2);
+    header('Location: game.html');
+    exit();
+}
 
-    // 6. Insert player data into the database
-    $query = "INSERT INTO players (player1, player2) VALUES ('$player1', '$player2')";
-    $result = mysqli_query($mysqli, $query);
+function sanitize_input($data) {
+    global $mysqli;
+    return mysqli_real_escape_string($mysqli, trim($data));
+}
 
-    if ($result) {
-        // 7. Redirect to the game page or load the game page dynamically
-        header('Location: game.html');  // Redirect to the game page (you can create this page)
-        exit();
-    } else {
-        echo "Error: " . mysqli_error($mysqli);
+function update_players($player1, $player2) {
+    global $mysqli;
+
+    $mysqli->query("DELETE FROM players");
+
+    $stmt1 = $mysqli->prepare("INSERT INTO players (username, piece_color, token) VALUES (?, 'Y', ?)");
+    $token1 = generate_token();
+    $stmt1->bind_param("ss", $player1, $token1);
+    $stmt1->execute();
+
+    $stmt2 = $mysqli->prepare("INSERT INTO players (username, piece_color, token) VALUES (?, 'R', ?)");
+    $token2 = generate_token();
+    $stmt2->bind_param("ss", $player2, $token2);
+    $stmt2->execute();
+}
+
+function update_board_layout($layout) {
+    global $mysqli;
+
+    // Determine the JSON file path
+    $file_path = __DIR__ . "/layouts/$layout.json";
+
+    if (!file_exists($file_path)) {
+        die("Error: Layout file '$layout.json' not found.");
     }
+
+    $layout_data = file_get_contents($file_path);
+
+    // Call the stored procedure to update obstacles
+    $stmt = $mysqli->prepare("CALL update_obstacles(?)");
+    $stmt->bind_param("s", $layout_data);
+    $stmt->execute();
+}
+
+function generate_token() {
+    return bin2hex(random_bytes(16));
 }
 ?>

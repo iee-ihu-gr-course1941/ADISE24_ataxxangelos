@@ -1,22 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="text/javascript" src="welcomepage.js"></script> 
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script type="text/javascript" src="js/welcomepage.js"></script> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
 </head>
 <body>
     <h1>Welcome to Ataxx</h1>
-    <div>Game is player-to player mode. Fill in the player names below to begin. <br><br></div>
+    <div>Game is player-to-player mode. Fill in the player names below to begin. <br><br></div>
     <form action="process.php" method="post">
         <label for="p1inputbox">Player 1</label>  
-            <input type="text" name="player1box" id="p1inputbox" oninput="textboxChanged()">
-            <br><br><br>
-            <label for="p2inputbox">Player 2</label>
-            <input type="text" name="player2box" id="p2inputbox" oninput="textboxChanged()">
-            <br><br><br>
-        <input type="submit" id="playBtn" value="Play Game" disabled>
-    </form>      
+        <input type="text" name="player1box" id="p1inputbox">
+        <br><br><br>
+        <label for="p2inputbox">Player 2</label>
+        <input type="text" name="player2box" id="p2inputbox">
+        <br><br><br>
+    
+        <label>Select Layout:</label><br>
+        <input type="radio" name="layout" value="cross-border" id="cross-border">
+        <label for="cross-border">Cross Border</label><br>
+        <input type="radio" name="layout" value="default" id="default">
+        <label for="default">Default</label><br>
+        <input type="radio" name="layout" value="x-border" id="x-border">
+        <label for="x-border">X Border</label><br>
+        <input type="radio" name="layout" value="inner-border" id="inner-border">
+        <label for="inner-border">Inner Border</label><br><br>
+    
+        <input type="submit" value="Play Game" id="playBtn" disabled>
+    </form>
+          
 </body>
 </html>

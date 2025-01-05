@@ -3,7 +3,7 @@
 $DB_HOST = 'localhost'; // Database host, typically localhost
 $DB_USER = 'root';      // Database username (change it as needed)
 $DB_PASS = '';          // Database password (change it as needed)
-$DB_NAME = 'test';// Database name (replace with your actual database name)
+$DB_NAME = 'ataxx';// Database name (replace with your actual database name)
 
 // Create a new connection to the MySQL database
 $mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
@@ -12,7 +12,7 @@ if(gethostname()=='users.iee.ihu.gr') {
 	$mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME,null,'/home/staff/asidirop/mysql/run/mysql.sock');
 } else {
 		$DB_PASS='';
-        $mysqli = new mysqli($host, $user, $pass, $db);
+        $mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 }
 
 // Check if the connection was successful
