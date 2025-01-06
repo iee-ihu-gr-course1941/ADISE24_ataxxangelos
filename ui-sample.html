@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- <script type="text/javascript" src="js/gamecenter.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="css/boardstyle.css">
+    <link rel="stylesheet" href="css/scoretable.css">
+    <title>ADISE24_Ataxxangelos</title>
+</head>
+<body>
+    <h1>ATAXX</h1>
+    <div id="game_board_container">
+        <table class="game_board">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <br><br>
+    <div id="player_join">
+        <form id="join_form">
+            <label for="player_name">Enter your name:</label>
+            <input type="text" id="player_name" name="player_name" placeholder="Your name" required>
+            <button type="submit" id="join_button">Join</button>
+        </form>
+        <br>
+        <p>Message that shows availability of the game</p>
+    </div>
+    <br><br>    
+    <div id="game_stats">
+        <table class="score_table">
+            <tr>
+                <td class="player_score" id="player1">
+                    <p class="player_name">Player 1</p>
+                    <p class="player_score_value">0</p>
+                </td>
+                <td class="timer" id="game_timer">
+                    <p>00:00</p>
+                </td>
+                <td class="player_score" id="player2">
+                    <p class="player_name">Player 2</p>
+                    <p class="player_score_value">0</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    <div>
+    </div>
+</body>
+</html>

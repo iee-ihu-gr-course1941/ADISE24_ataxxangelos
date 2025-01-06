@@ -1,22 +1,22 @@
-table.gameBoard {
+table.game_board {
     width: 500px;
     height: 500px;
     border-collapse:collapse;
   }
-  table.gameBoard td, table.gameBoard th {
+  table.game_board td, table.game_board th {
     border: 2px solid #222222;
     padding: 5px 4px;
   }
-  table.gameBoard tbody td {
+  table.game_board tbody td {
     font-size: 13px;
   }
-  table.gameBoard tfoot td {
+  table.game_board tfoot td {
     font-size: 14px;
   }
-  table.gameBoard tfoot .links {
+  table.game_board tfoot .links {
     text-align: right;
   }
-  table.gameBoard tfoot .links a{
+  table.game_board tfoot .links a{
     display: inline-block;
     background: #1C6EA4;
     color: #FFFFFF;

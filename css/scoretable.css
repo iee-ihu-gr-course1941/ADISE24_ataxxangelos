@@ -1,0 +1,31 @@
+/* General styling for the score table */
+.score_table {
+    width: 100%; /* Full width to match the container */
+    border-collapse: collapse;
+    text-align: center;
+    table-layout: fixed; /* Ensures even column widths */
+    margin: 0 auto; /* Center the table horizontally */
+}
+
+/* Styling for the player scores */
+.player_score {
+    width: 30%; /* Takes 30% of the table width */
+    padding: 5px; /* Small padding for compactness */
+    font-size: 14px; /* Adjust font size */
+    vertical-align: middle;
+}
+
+/* Styling for the timer */
+.timer {
+    width: 40%; /* Center space for the timer */
+    font-size: 16px; /* Slightly larger for visibility */
+    font-weight: bold;
+    padding: 5px;
+    vertical-align: middle;
+}
+
+/* Remove default margins/padding from paragraphs */
+.score_table p {
+    margin: 0;
+    padding: 0;
+}
