@@ -43,25 +43,10 @@ function spawn_playerform() {
         .text('Join')
         .prop('disabled', true); // Button starts as disabled
 
-    const $players_online = $('<p>').attr('id', `players_online`).text(getNumberOfPlayers() + "/2 Players Online");
-
-    var $status_text;
-
-    switch (getNumberOfPlayers()){
-        case 0: 
-            $status_text='You can set the layout of the game below:';
-        break;
-        case 1: 
-            $status_text='Player 1 is waiting for you to join.';
-        break;
-        case 2: 
-            $status_text='Game is full. Please wait...';
-        break;
-    }
-    var $status_msg = $('<p>').attr('id', `game_status`).text($status_text);
+    const $status_msg=$('<p>').attr('id', 'status_msg').text('Message will show up here.');
 
 
-    $form.append($input, $button, $('<br>'), $players_online, $('<br>'), $status_msg);
+    $form.append($input, $button, $('<br>'), $status_msg);
 
 
     $('#player_join').empty().append($form);
@@ -71,19 +56,6 @@ function spawn_playerform() {
             $button.prop('disabled', false); // Enable the button
         } else {
             $button.prop('disabled', true); // Disable the button
-        }
-    });
-}
-
-function getNumberOfPlayers() {
-    $.ajax({
-        url: 'noOfPlayers.php', // PHP file to handle the query
-        type: 'GET',
-        success: function(response) {
-            console.log("Number of players: " + response);
-        },
-        error: function(xhr, status, error) {
-            console.error("Error fetching number of players: " + error);
         }
     });
 }
