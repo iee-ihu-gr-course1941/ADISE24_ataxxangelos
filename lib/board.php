@@ -1,5 +1,11 @@
 <?php
 
+	function get_board(){
+		global $mysqli;
+		$query = "SELECT * FROM board";
+		$result = $mysqli->query($query);
+		return $result->fetch_all(MYSQLI_ASSOC);
+	}
  
 
 

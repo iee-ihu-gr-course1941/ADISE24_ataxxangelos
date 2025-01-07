@@ -1,7 +1,12 @@
 <?php
 
 
-
+function get_stats(){
+	global $mysqli;
+	$query = "SELECT * FROM game_stats";
+	$result = $mysqli->query($query);
+	return $result->fetch_all(MYSQLI_ASSOC);
+}
 
 
 

@@ -9,10 +9,10 @@ CREATE TABLE board (
 INSERT INTO board (x, y, piece_color)
 VALUES 
     -- Add the special cases for 'R' and 'Y' pieces first
-    (1, 1, 'R'),
-    (7, 7, 'R'),
-    (1, 7, 'Y'),
-    (7, 1, 'Y'),
+    (1, 1, 'Y'),
+    (7, 7, 'Y'),
+    (1, 7, 'R'),
+    (7, 1, 'R'),
 
     -- Add the remaining cells with NULL for piece_color
     (1, 2, NULL), (1, 3, NULL), (1, 4, NULL), (1, 5, NULL), (1, 6, NULL),
@@ -34,10 +34,10 @@ CREATE TABLE board_empty (
 INSERT INTO board_empty (x, y, piece_color)
 VALUES 
     -- Add the special cases for 'R' and 'Y' pieces first
-    (1, 1, 'R'),
-    (7, 7, 'R'),
-    (1, 7, 'Y'),
-    (7, 1, 'Y'),
+    (1, 1, 'Y'),
+    (7, 7, 'Y'),
+    (1, 7, 'R'),
+    (7, 1, 'R'),
 
     -- Add the remaining cells with NULL for piece_color
     (1, 2, NULL), (1, 3, NULL), (1, 4, NULL), (1, 5, NULL), (1, 6, NULL),
@@ -55,6 +55,8 @@ CREATE TABLE game_stats (
   result ENUM('R', 'Y', 'D') DEFAULT NULL, -- 'D' for draw
   last_change TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+INSERT INTO game_stats(g_status, p_turn, result, last_change) VALUES ('not active', 'Y', NULL, CURRENT_TIMESTAMP);
 
 -- Table to store information about players and moves
 CREATE TABLE players (
