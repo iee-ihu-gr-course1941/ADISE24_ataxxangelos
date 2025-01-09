@@ -27,13 +27,7 @@ function add_player($name) {
     }
     $token = bin2hex(random_bytes(16)); // Generates a 32-character unique token
     $query = "INSERT INTO players (username, piece_color, token, score) VALUES ('$name', '$color', '$token', 2)";
-    if ($mysqli->query($query)) {
-        /*echo json_encode([
-            'message' => "Player added successfully as $color"//,
-            //'token' => $token, // Return the generated token
-            //'color' => $color
-        ]);*/
-    } else {
+    if (!$mysqli->query($query)) {
         header('HTTP/1.1 500 Internal Server Error');
         echo json_encode(['message' => 'Failed to add player.']);
     }
@@ -44,7 +38,10 @@ function add_player($name) {
 function remove_player($name) {
     global $mysqli;
     $query = "DELETE FROM players WHERE username = '$name'";
-    $mysqli->query($query);
+    if (!$mysqli->query($query)) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode(['message' => 'Failed to add player.']);
+    }
 }
 
 

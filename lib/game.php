@@ -8,7 +8,41 @@ function get_stats(){
 	return $result->fetch_all(MYSQLI_ASSOC);
 }
 
+function initialize_game(){
+	global $mysqli;
+	$query="UPDATE game_stats SET g_status = 'initialized'";
+	if (!$mysqli->query($query)) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode(['message' => 'Failed to start game.']);
+    } 
+}
 
+function begin_round(){
+	global $mysqli;
+	$query = "UPDATE game_stats SET g_status = 'started'";
+	if (!$mysqli->query($query)) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode(['message' => 'Failed to start game.']);
+    } 
+}
+
+function abort_game(){
+	global $mysqli;
+	$query = "UPDATE game_stats SET g_status = 'aborted'";
+	if (!$mysqli->query($query)) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode(['message' => 'Unexpected error.']);
+    } 
+}
+
+function end_game(){
+	global $mysqli;
+	$query = "UPDATE game_stats SET g_status = 'ended'";
+	if (!$mysqli->query($query)) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode(['message' => 'Unexpected error.']);
+    }
+}
 
 
 

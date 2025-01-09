@@ -92,7 +92,41 @@ const HtmlSpawners = {
         $('#game_stats').empty().append($table);
     },
 
-    spawn_command_center: function(){
-        
+    spawn_command_center: function () {
+        // Ensure only one command center exists per tab
+        if ($('#command_center').length > 0) {
+            console.log("Command center already exists in this tab.");
+            return;
+        }
+    
+        // Create a container for the command center
+        const $commandCenter = $('<div>')
+            .attr('id', 'command_center')
+            .addClass('command_center'); // Add a class for styling
+    
+        // Create a label for the input
+        const $label = $('<label>')
+            .attr('for', 'command_input')
+            .text('Enter Command:');
+    
+        // Create the input textbox
+        const $input = $('<input>')
+            .attr('type', 'text')
+            .attr('id', 'command_input')
+            .addClass('command_input')
+            .attr('placeholder', 'e.g., move x1 y1 x2 y2');
+    
+        // Create the GO button
+        const $button = $('<button>')
+            .attr('id', 'go_button')
+            .addClass('go_button')
+            .text('GO');
+    
+        // Append the elements to the command center
+        $commandCenter.append($label, '<br>', $input, '<br>', $button);
+    
+        // Append the command center to the right of the game board
+        $('#game_board_container').after($commandCenter);
     }
+        
 };

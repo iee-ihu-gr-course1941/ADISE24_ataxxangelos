@@ -1,3 +1,8 @@
+var me={username:null, color:null, token:null};
+var timerInterval=null;
+var game_status={};
+var tabId=null;
+
 // INIT COMPONENTS ONLOAD DOCUMENT
 $(function () {
     //HTML Spawn Functions
@@ -13,6 +18,10 @@ $(function () {
     $('#join_button').click(login_to_game);
 
     //$(window).on('beforeunload', player_exit);
+});
+
+$(window).on('beforeunload', function() {
+    if (me!=null) player_exit();
 });
 
 function update_everything(){
@@ -58,7 +67,7 @@ function update_status(){
         url: 'ataxx.php/status',
         method: 'GET',
         success: function(response){
-            var game_status=response.stats;
+            game_status=response.stats;
             render_status(game_status);
             
         },
@@ -95,6 +104,8 @@ function render_status(game_status) {
             break;
         case 'ended':
             statusText = 'Game Ended';
+            stop_timer();
+            $('#command_center').hide();
             const $resultElement = $('#game_result');
             if (result) {
                 let resultText;
@@ -116,6 +127,8 @@ function render_status(game_status) {
             break;
         case 'aborted':
             statusText = 'Game Aborted';
+            stop_timer();
+            $('#command_center').hide();
             break;
         default:
             statusText = 'Unknown Status';
@@ -148,6 +161,10 @@ function render_players(playersQuery) {
                 } else { 
                     $('#player1 .player_name').text(playersQuery[i].username); // Update name
                     $('#player1 .player_score_value').text(playersQuery[i].score || '0'); // Update score (default 0 if null)
+                    if (playersQuery[i].username=me.username){ //To update the local object
+                        me.color=playersQuery[i].piece_color;
+                        me.token=playersQuery[i].token;
+                    }
                 }
                 break;
             case 1: // Player 2
@@ -157,6 +174,12 @@ function render_players(playersQuery) {
                 } else { 
                     $('#player2 .player_name').text(playersQuery[i].username); // Update name
                     $('#player2 .player_score_value').text(playersQuery[i].score || '0'); // Update score (default 0 if null)
+                    if (playersQuery[i].username=me.username){ //To update the local object
+                        me.color=playersQuery[i].piece_color;
+                        me.token=playersQuery[i].token;
+                    }
+                    console.log($('#game_status').text());
+                    if ($('#game_status').text() == 'Initialized') start_game();
                 }
                 break;
         }
@@ -171,16 +194,16 @@ function login_to_game(){
             switch(response.count){
                 case 0:
                     joinPlayer();
+                    initialize_game();
                 break;
                 case 1:
                     joinPlayer();
-                    //start_game();
                 break;
                 case 2:
-                    $('status_msg').text('Table is full try again later');
+                    $('#status_msg').text('Table is full. Please try again later.');
                 break;
                 default:
-                    $('status_msg').text('An error occured. Please try again later.');
+                    $('#status_msg').text('An error occured. Please try again later.');
                 break;
             }
         },
@@ -195,11 +218,12 @@ function joinPlayer() {
     $.ajax({
         url: 'ataxx.php/players',
         method: 'POST',
-        contentType: 'application/json',  // Specify content type as JSON
+        contentType: 'application/json', 
         dataType: 'json',
         data: JSON.stringify({username: $('#player_name').val()}),
         success: function(response) {
             $('#status_msg').text(response.message);
+            me.username=$('#player_name').val();
             $('#player_name').hide();
             $('#join_button').hide();
         },
@@ -210,8 +234,92 @@ function joinPlayer() {
     });
 }
 
+function player_exit() {
+    const playerName = me.username; 
+
+    if (playerName) {
+        fetch('ataxx.php/players', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: playerName })
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Failed to remove player:', response.statusText);
+            } else {
+                console.log('Player removed successfully');
+            }
+        })
+        .catch(error => {
+            console.error('Error during player removal:', error);
+        });
+    }
+}
+
+
+function initialize_game(){
+    $.ajax({
+        url: 'ataxx.php/status',
+        method: 'PUT',
+        contentType: 'application/json',
+        datatype: 'json',
+        data: JSON.stringify({shiftgame: 'initialize'}),
+        success: function(response){
+            console.log(response);
+        }
+    });
+}
+
 function start_game(){
+    $.ajax({
+        url: 'ataxx.php/status',
+        method: 'PUT',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({shiftgame: 'start'}),
+        success: function(response){
+            console.log(response);
+            let secondsElapsed = 0;
+            check_and_spawn_command_center();
+            timerInterval = setInterval(function() {
+                secondsElapsed++;
+                const minutes = Math.floor(secondsElapsed / 60);
+                const seconds = secondsElapsed % 60;
+
+                $('#game_timer p:first').text(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+            }, 1000);
+        }
+    })
+}
+
+function stop_timer(){
+    if (typeof timerInterval !== 'undefined') {
+        clearInterval(timerInterval); // Stops the timer
+        timerInterval = null; // Reset the variable to avoid accidental reuse
+        $('#game_timer p:first').text('00:00'); // Optionally reset the timer display
+        $('#command_center_msg').text('Timer stopped.'); // Optional status update
+    }
     
+}
+
+function check_and_spawn_command_center() {
+    $.ajax({
+        url: 'ataxx.php/status',
+        method: 'GET',
+        success: function (response) {
+            const gameStatus = response.stats[0].g_status;
+
+            // Only spawn the command center if the game is started
+            if (gameStatus === 'started') {
+                HtmlSpawners.spawn_command_center(); // Ensure the command center is spawned once
+            }
+        },
+        error: function () {
+            console.error('Failed to fetch game status.');
+        }
+    });
 }
 
 
@@ -221,24 +329,4 @@ function start_game(){
 
 
 
-// Function to handle player exit when they close the tab or browser
-/*function player_exit() {
-    const playerName = $('#p1inputbox').val();  // Assuming the player's name is stored here
 
-    if (playerName) {
-        $.ajax({
-            url: 'remove_player.php', // Endpoint to remove the player
-            method: 'POST',
-            data: {
-                playerName: playerName  // Send the player's name
-            },
-            async: false,  // Ensure it runs synchronously before the page is unloaded
-            success: function (response) {
-                console.log('Player removed successfully.');
-            },
-            error: function () {
-                console.error('Error removing player.');
-            }
-        });
-    }
-}*/

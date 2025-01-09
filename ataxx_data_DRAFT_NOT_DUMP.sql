@@ -67,3 +67,28 @@ CREATE TABLE players (
   last_action TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (piece_color) -- Ensures each color is unique
 );
+
+DELIMITER $$
+
+CREATE TRIGGER after_player_delete
+AFTER DELETE ON players
+FOR EACH ROW
+BEGIN
+    DECLARE remaining_players INT;
+
+    -- Count the remaining players in the table
+    SELECT COUNT(*) INTO remaining_players FROM players;
+
+    -- Update the game status based on the number of players left
+    IF remaining_players = 1 THEN
+        UPDATE game_stats
+        SET g_status = 'aborted';
+    ELSEIF remaining_players = 0 THEN
+        UPDATE game_stats
+        SET g_status = 'not active',
+		  p_turn = 'Y';
+    END IF;
+END$$
+
+DELIMITER ;
+

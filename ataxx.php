@@ -10,7 +10,7 @@ require_once "lib/players.php";
 $method = $_SERVER['REQUEST_METHOD'];
 $request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
 $input = json_decode(file_get_contents('php://input'),true);
-if($input==null) {
+/*if($input==null) {
     $input=[];
 }
 if(isset($_SERVER['HTTP_X_TOKEN'])) {
@@ -18,7 +18,7 @@ if(isset($_SERVER['HTTP_X_TOKEN'])) {
 } else {
     $input['token']='';
 }
-
+*/
 switch ($r=array_shift($request)) {
     case 'board' : 
         switch ($b=array_shift($request)) {
@@ -30,7 +30,7 @@ switch ($r=array_shift($request)) {
             }
             break;
     case 'status': 
-			if(sizeof($request)==0) {handle_status($method);}
+			if(sizeof($request)==0) {handle_status($method, $input);}
 			else {header("HTTP/1.1 404 Not Found");}
 			break;
 	case 'players': handle_player($method, $request,$input);
@@ -63,7 +63,6 @@ function handle_piece($method, $x,$y,$input) {
 
 }
 
-// Ensure the response is a single JSON object
 function handle_player($method, $input) {
     if ($method == 'GET') {
         $players = get_players();
@@ -79,9 +78,10 @@ function handle_player($method, $input) {
         header('Content-Type: application/json');
         echo json_encode(['message' => 'You jave joined the game!']);
     } elseif ($method == 'DELETE') {
+        $input = json_decode(file_get_contents('php://input'), true);
         $username = $input['username'];
         remove_player($username);
-        echo json_encode(['status' => 'Player removed']);
+        echo json_encode(['message' => 'Player removed successfully']);
     }
 }
 
@@ -89,12 +89,22 @@ function handle_player($method, $input) {
 
 
 
-function handle_status($method){
+function handle_status($method, $input){
+    $input = json_decode(file_get_contents('php://input'),true);
     if ($method == 'GET'){
         $stats = get_stats();
         header('Content-Type: application/json');
         echo json_encode(['stats' => $stats]);
-    }//elseif ($method == 'PUT'){    }
+    }elseif ($method == 'PUT'){
+        $shiftgame=$input['shiftgame'];
+        switch ($shiftgame){
+            case 'initialize': initialize_game();
+            break;
+            case 'start': begin_round();
+            break;
+        }
+        echo json_encode(['message' => 'Game Status changed.']);
+    }
 }
 
 
