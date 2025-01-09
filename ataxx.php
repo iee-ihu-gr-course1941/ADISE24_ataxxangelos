@@ -63,6 +63,7 @@ function handle_piece($method, $x,$y,$input) {
 
 }
 
+// Ensure the response is a single JSON object
 function handle_player($method, $input) {
     if ($method == 'GET') {
         $players = get_players();
@@ -72,18 +73,21 @@ function handle_player($method, $input) {
             'count' => count($players)
         ]); 
     } elseif ($method == 'POST') {
-        $username = $input['username'];
-        add_player($username);
+        $input = json_decode(file_get_contents('php://input'), true);
+        $username = $input['username'];  // Get the username from input
+        add_player($username);  // The add_player function will handle the token and everything else
         header('Content-Type: application/json');
-        echo json_encode(['message' => 'Player added successfully']);
+        echo json_encode(['message' => 'You jave joined the game!']);
     } elseif ($method == 'DELETE') {
         $username = $input['username'];
         remove_player($username);
-        echo json_encode([
-            'status' => $status,
-        ]); 
+        echo json_encode(['status' => 'Player removed']);
     }
 }
+
+
+
+
 
 function handle_status($method){
     if ($method == 'GET'){

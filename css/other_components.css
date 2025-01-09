@@ -1,0 +1,25 @@
+#command_center {
+    margin-left: 20px; /* Space between board and command center */
+    display: inline-block; /* Keeps it beside the board */
+    vertical-align: top; /* Aligns it to the top of the board */
+}
+
+.command_input {
+    width: 200px;
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.go_button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.go_button:hover {
+    background-color: #45a049;
+}

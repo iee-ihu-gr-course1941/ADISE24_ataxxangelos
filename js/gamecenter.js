@@ -1,17 +1,15 @@
-
-var currentPlayers;
-
 // INIT COMPONENTS ONLOAD DOCUMENT
 $(function () {
-    //Spawn Functions in HTML
-    spawn_board();
-    spawn_playerform();
-    spawn_scoreboard();
+    //HTML Spawn Functions
+    HtmlSpawners.spawn_board();
+    HtmlSpawners.spawn_playerform();
+    HtmlSpawners.spawn_scoreboard();
 
-    //Interactive Functions
+    //Update Elements; Sync everything with the database
     update_everything();
     setInterval(update_everything, 3000);
 
+    //Event Handlers
     $('#join_button').click(login_to_game);
 
     //$(window).on('beforeunload', player_exit);
@@ -20,6 +18,7 @@ $(function () {
 function update_everything(){
     update_board();
     update_status();
+    update_players();
 }
 
 function update_board() {
@@ -27,7 +26,7 @@ function update_board() {
         url: 'ataxx.php/board',
         method: 'GET',
         success: function (response) {
-            var boardData = response.board; // Ensure the API returns { board: [...] }
+            var boardData = response.board;
             renderBoard(boardData);
         },
         error: function () {
@@ -38,10 +37,6 @@ function update_board() {
 
 
 function renderBoard(boardData) {
-    // `boardData` should be an array of objects with information about each cell
-    // Example: [{ x: 1, y: 1, color: 'R' }, { x: 2, y: 1, color: 'Y' }, ...]
-
-    // Loop through the board data
     boardData.forEach(cell => {
         const cellId = `cell_${cell.x}_${cell.y}`; // Adjust by -1 to match the correct grid
         const $cell = $(`#${cellId}`); // Get the cell element by its ID
@@ -63,7 +58,7 @@ function update_status(){
         url: 'ataxx.php/status',
         method: 'GET',
         success: function(response){
-            var game_stats=response.stats;
+            var game_status=response.stats;
             render_status(game_status);
             
         },
@@ -73,12 +68,12 @@ function update_status(){
     });
 }
 
-function render_status(gameStats) {
+function render_status(game_status) {
     // Extract individual fields from gameStats
-    const gameStatus = gameStats.g_status; // Game status (e.g., 'started')
-    const playerTurn = gameStats.p_turn; // Player's turn (e.g., 'R' or 'Y')
-    const result = gameStats.result; // Game result (e.g., 'R', 'Y', or 'D')
-    const lastChange = gameStats.last_change; // Timestamp of last change
+    const gameStatus = game_status[0].g_status; // Game status (e.g., 'started')
+    const playerTurn = game_status[0].p_turn; // Player's turn (e.g., 'R' or 'Y')
+    const result = game_status[0].result; // Game result (e.g., 'R', 'Y', or 'D')
+    const lastChange = game_status[0].last_change; // Timestamp of last change
 
     // Update the game status
     const $statusElement = $('#game_status');
@@ -92,9 +87,32 @@ function render_status(gameStats) {
             break;
         case 'started':
             statusText = 'Game Started';
+            const $turnElement = $('#player_turn');
+            if (playerTurn) {
+            const turnText = playerTurn === 'R' ? 'Red\'s Turn' : 'Yellow\'s Turn';
+            $turnElement.text(turnText);
+            }
             break;
         case 'ended':
             statusText = 'Game Ended';
+            const $resultElement = $('#game_result');
+            if (result) {
+                let resultText;
+            switch (result) {
+                case 'R':
+                    resultText = 'Red Wins!';
+                    break;
+                case 'Y':
+                    resultText = 'Yellow Wins!';
+                    break;
+                case 'D':
+                    resultText = 'It\'s a Draw!';
+                    break;
+                default:
+                    resultText = '';
+        }
+        $resultElement.text(resultText);
+    }
             break;
         case 'aborted':
             statusText = 'Game Aborted';
@@ -104,139 +122,59 @@ function render_status(gameStats) {
     }
     $statusElement.text(statusText);
     
-    /*
-    // Update player turn
-    const $turnElement = $('#player_turn'); // Make sure you have an element for player turn
-    if (playerTurn) {
-        const turnText = playerTurn === 'R' ? 'Red\'s Turn' : 'Yellow\'s Turn';
-        $turnElement.text(turnText);
-    }
-
-    // Update game result (if any)
-    
-    const $resultElement = $('#game_result'); // Make sure you have an element for game result
-    if (result) {
-        let resultText;
-        switch (result) {
-            case 'R':
-                resultText = 'Red Wins!';
-                break;
-            case 'Y':
-                resultText = 'Yellow Wins!';
-                break;
-            case 'D':
-                resultText = 'It\'s a Draw!';
-                break;
-            default:
-                resultText = '';
-        }
-        $resultElement.text(resultText);
-    }
-        */
 
     // Optionally log the last change timestamp
     console.log("Last change:", lastChange);
 }
 
-
-// Function to spawn the game board
-function spawn_board() {
-    const $table = $('<table>').addClass('game_board');
-
-    for (let i = 1; i <= 7; i++) {
-        const $row = $('<tr>').attr('id', `line_${i}`); // Add unique ID for each row
-        for (let j = 1; j <= 7; j++) {
-            const $cell = $('<td>').attr('id', `cell_${i}_${j}`); // Optional: Add unique ID for each cell
-            $cell.text(''); 
-            $row.append($cell); 
+function update_players(){
+    $.ajax({
+        url: 'ataxx.php/players',
+        method: 'GET',
+        success: function(response){
+            var playersQuery=response.players;
+            render_players(playersQuery);
         }
-        $table.append($row);
+    })
+}
+
+function render_players(playersQuery) {
+    for (var i = 0; i <= 1; i++) {
+        switch (i) {
+            case 0: // Player 1
+                if (playersQuery[i] == null) { // If Player 1 hasn't joined
+                    $('#player1 .player_name').text('Player 1'); // Reset name
+                    $('#player1 .player_score_value').text('0'); // Reset score
+                } else { 
+                    $('#player1 .player_name').text(playersQuery[i].username); // Update name
+                    $('#player1 .player_score_value').text(playersQuery[i].score || '0'); // Update score (default 0 if null)
+                }
+                break;
+            case 1: // Player 2
+                if (playersQuery[i] == null) { // If Player 2 hasn't joined
+                    $('#player2 .player_name').text('Player 2'); // Reset name
+                    $('#player2 .player_score_value').text('0'); // Reset score
+                } else { 
+                    $('#player2 .player_name').text(playersQuery[i].username); // Update name
+                    $('#player2 .player_score_value').text(playersQuery[i].score || '0'); // Update score (default 0 if null)
+                }
+                break;
+        }
     }
-    // Append the table to the container with id="game_board_container"
-    console.log($table[0].outerHTML); // Log the generated HTML for debugging
-    $('#game_board_container').empty().append($table);
-}
-
-function spawn_playerform() {
-    const $form = $('<div>').addClass('player-join-form');
-
-    // Create the input field for the player's name
-    const $input = $('<input>')
-        .attr({
-            type: 'text',
-            id: 'player_name',
-            placeholder: 'Enter your name'
-        });
-
-    // Create the join button, initially disabled
-    const $button = $('<button>')
-        .attr('id', 'join_button')
-        .text('Join')
-        .prop('disabled', true); // Button starts as disabled
-
-    const $status_msg=$('<p>').attr('id', 'status_msg').text('Message will show up here.');
-
-
-    $form.append($input, $button, $('<br>'), $status_msg);
-
-
-    $('#player_join').empty().append($form);
-
-    $input.on('input', function () {
-        if ($(this).val().trim() !== '') {
-            $button.prop('disabled', false); // Enable the button
-        } else {
-            $button.prop('disabled', true); // Disable the button
-        }
-    });
-}
-
-function spawn_scoreboard() {
-    const $table = $('<table>').addClass('score_table');
-
-    const $row = $('<tr>');
-
-    const $player1Cell = $('<td>')
-        .addClass('player_score')
-        .attr('id', 'player1')
-        .append(
-            $('<p>').addClass('player_name').text('Player 1'),
-            $('<p>').addClass('player_score_value').text('0')
-        );
-
-        const $timerCell = $('<td>')
-        .addClass('timer')
-        .attr('id', 'game_timer')
-        .append($('<p>').text('00:00')) // Timer text
-        .append($('<p>').attr('id', 'game_status').text('Game Status')); // Status text
-    
-    // Add $timerCell to the scoreboard row/table as needed
-    
-
-    const $player2Cell = $('<td>')
-        .addClass('player_score')
-        .attr('id', 'player2')
-        .append(
-            $('<p>').addClass('player_name').text('Player 2'),
-            $('<p>').addClass('player_score_value').text('0')
-        );
-
-    $row.append($player1Cell, $timerCell, $player2Cell);
-    $table.append($row);
-
-    $('#game_stats').empty().append($table);
 }
 
 function login_to_game(){
-    // Send an AJAX request to check the current number of players
     $.ajax({
         url: 'ataxx.php/players', 
         method: 'GET', 
         success: function(response) {
-            switch(currentPlayers){
+            switch(response.count){
                 case 0:
+                    joinPlayer();
+                break;
                 case 1:
-                    declare_connection();
+                    joinPlayer();
+                    //start_game();
                 break;
                 case 2:
                     $('status_msg').text('Table is full try again later');
@@ -248,36 +186,37 @@ function login_to_game(){
         },
         error: function() {
             $('#status_msg').text('An error occurred. Please try again later.');
+            return false;
         }
     });
 }
 
-function declare_connection(){
-    joinPlayer();
-
-}
-
-function checkAvailability(){
-
-}
-
-function joinPlayer(){
+function joinPlayer() {
     $.ajax({
-        url: 'ataxx.php/players', 
+        url: 'ataxx.php/players',
         method: 'POST',
-        data: {
-            username: $('#player_name').val()
+        contentType: 'application/json',  // Specify content type as JSON
+        dataType: 'json',
+        data: JSON.stringify({username: $('#player_name').val()}),
+        success: function(response) {
+            $('#status_msg').text(response.message);
+            $('#player_name').hide();
+            $('#join_button').hide();
         },
-        success: function(response){
-            // Handle the success response here
-            $('#status_msg').text('You have joined the game!');
-        },
-        error: function(){
+        error: function(xhr, status, error) {
+            console.log('Error response:', xhr.responseText);  // Log the error response
             $('#status_msg').text('An error occurred. Please try again later.');
         }
     });
-    const $game_menu=$('#game_menu')
 }
+
+function start_game(){
+    
+}
+
+
+
+
 
 
 

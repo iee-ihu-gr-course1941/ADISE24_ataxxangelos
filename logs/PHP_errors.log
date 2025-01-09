@@ -425,3 +425,16 @@ Stack trace:
 #0 C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php(33): handle_status('GET')
 #1 {main}
   thrown in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 88
+[08-Jan-2025 20:11:22 Europe/Berlin] PHP Warning:  Undefined array key "username" in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 75
+[08-Jan-2025 20:13:34 Europe/Berlin] PHP Warning:  Undefined array key "username" in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 75
+[08-Jan-2025 20:14:47 Europe/Berlin] PHP Warning:  Undefined array key "username" in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 75
+[08-Jan-2025 20:15:00 Europe/Berlin] PHP Warning:  Undefined array key "username" in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 75
+[08-Jan-2025 21:40:30 Europe/Berlin] PHP Warning:  Undefined array key "username" in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 77
+[08-Jan-2025 21:40:30 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined function generate_token() in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php:83
+Stack trace:
+#0 C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php(36): handle_player('POST', Array, Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 83
+[08-Jan-2025 21:43:23 Europe/Berlin] PHP Warning:  Undefined array key "username" in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 77
+[08-Jan-2025 21:47:52 Europe/Berlin] PHP Warning:  Undefined array key "username" in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 77
+[08-Jan-2025 21:50:39 Europe/Berlin] PHP Warning:  Undefined array key "username" in C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php on line 76
