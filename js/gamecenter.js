@@ -103,7 +103,7 @@ function render_status(game_status) {
             break;
         case 'ended':
             statusText = 'Game Ended';
-            stop_timer();
+            $('#game_timer p:first').hide();
             $('#command_center').hide();
             const $resultElement = $('#game_result');
             if (result) {
@@ -121,7 +121,7 @@ function render_status(game_status) {
                     default:
                         resultText = '';
                 }
-                stop_timer();
+                $('#game_timer p:first').hide();
                 $('#command_center').hide();
                 $resultElement.text(resultText);
             }

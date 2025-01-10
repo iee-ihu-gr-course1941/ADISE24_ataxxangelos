@@ -1452,3 +1452,10 @@ Stack trace:
 #2 C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php(28): handle_piece('PUT', Array)
 #3 {main}
   thrown in C:\xampp\htdocs\ADISE24_ataxxangelos\lib\board.php on line 49
+[10-Jan-2025 21:19:35 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid jump: Either destination is not empty or source is incorrect in C:\xampp\htdocs\ADISE24_ataxxangelos\lib\board.php:49
+Stack trace:
+#0 C:\xampp\htdocs\ADISE24_ataxxangelos\lib\board.php(49): mysqli_stmt->execute()
+#1 C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php(61): move_piece(1, 3, 1, 5, 'Y', '25ef4f5d8fb8c11...')
+#2 C:\xampp\htdocs\ADISE24_ataxxangelos\ataxx.php(28): handle_piece('PUT', Array)
+#3 {main}
+  thrown in C:\xampp\htdocs\ADISE24_ataxxangelos\lib\board.php on line 49
