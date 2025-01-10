@@ -93,11 +93,6 @@ const HtmlSpawners = {
     },
 
     spawn_command_center: function () {
-        // Ensure only one command center exists per tab
-        if ($('#command_center').length > 0) {
-            console.log("Command center already exists in this tab.");
-            return;
-        }
     
         // Create a container for the command center
         const $commandCenter = $('<div>')

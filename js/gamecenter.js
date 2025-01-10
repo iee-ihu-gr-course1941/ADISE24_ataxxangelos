@@ -1,7 +1,7 @@
 var me={username:null, color:null, token:null};
 var timerInterval=null;
 var game_status={};
-var tabId=null;
+let isCommandCenterSpawned = false;
 
 // INIT COMPONENTS ONLOAD DOCUMENT
 $(function () {
@@ -258,7 +258,6 @@ function player_exit() {
     }
 }
 
-
 function initialize_game(){
     $.ajax({
         url: 'ataxx.php/status',
@@ -272,27 +271,29 @@ function initialize_game(){
     });
 }
 
-function start_game(){
+function start_game() {
+    // Proceed with game start actions (timer, status update, etc.)
     $.ajax({
         url: 'ataxx.php/status',
         method: 'PUT',
         contentType: 'application/json',
         dataType: 'json',
-        data: JSON.stringify({shiftgame: 'start'}),
-        success: function(response){
-            console.log(response);
+        data: JSON.stringify({ shiftgame: 'start' }),
+        success: function(response) {
+            console.log('Game started:', response);
+            HtmlSpawners.spawn_command_center();
             let secondsElapsed = 0;
-            check_and_spawn_command_center();
-            timerInterval = setInterval(function() {
+            setInterval(function() {
                 secondsElapsed++;
                 const minutes = Math.floor(secondsElapsed / 60);
                 const seconds = secondsElapsed % 60;
-
                 $('#game_timer p:first').text(`${minutes}:${seconds.toString().padStart(2, '0')}`);
             }, 1000);
         }
-    })
+    });
 }
+
+
 
 function stop_timer(){
     if (typeof timerInterval !== 'undefined') {
@@ -303,25 +304,6 @@ function stop_timer(){
     }
     
 }
-
-function check_and_spawn_command_center() {
-    $.ajax({
-        url: 'ataxx.php/status',
-        method: 'GET',
-        success: function (response) {
-            const gameStatus = response.stats[0].g_status;
-
-            // Only spawn the command center if the game is started
-            if (gameStatus === 'started') {
-                HtmlSpawners.spawn_command_center(); // Ensure the command center is spawned once
-            }
-        },
-        error: function () {
-            console.error('Failed to fetch game status.');
-        }
-    });
-}
-
 
 
 
