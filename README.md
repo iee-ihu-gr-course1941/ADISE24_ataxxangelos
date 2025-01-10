@@ -128,6 +128,7 @@ The backend API is structured according to RESTful principles. Below is the API 
 
 ## Author
 Created by Angelos Athanasiou 2019002.
+Duration of development: 1 week.
 
 ---
 
