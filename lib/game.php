@@ -35,9 +35,15 @@ function abort_game(){
     } 
 }
 
-function end_game(){
+function game_over($winner){
 	global $mysqli;
-	$query = "UPDATE game_stats SET g_status = 'ended'";
+	if ($winner == 'Y'){
+		$query = "UPDATE game_stats SET g_status = 'ended', result = 'Y'";
+	}else if ($winner == 'R'){
+		$query = "UPDATE game_stats SET g_status = 'ended', result = 'R'";
+	}else if ($winner == 'D'){
+		$query = "UPDATE game_stats SET g_status = 'ended', result = 'D'";
+	}
 	if (!$mysqli->query($query)) {
         header('HTTP/1.1 500 Internal Server Error');
         echo json_encode(['message' => 'Unexpected error.']);

@@ -122,6 +122,8 @@ const HtmlSpawners = {
     
         // Append the command center to the right of the game board
         $('#game_board_container').after($commandCenter);
+
+        //$('#go_button').click();
     }
         
 };

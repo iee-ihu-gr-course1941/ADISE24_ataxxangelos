@@ -3,7 +3,7 @@
 //METHOD GET /players
 function get_players() {
 	global $mysqli;
-    $query = "SELECT username, piece_color, score FROM players ORDER BY piece_color DESC";
+    $query = "SELECT * FROM players ORDER BY piece_color DESC";
     $result = $mysqli->query($query);
     return $result->fetch_all(MYSQLI_ASSOC);
 }

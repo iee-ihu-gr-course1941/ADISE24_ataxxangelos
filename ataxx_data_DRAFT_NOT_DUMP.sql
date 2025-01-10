@@ -85,10 +85,115 @@ BEGIN
         SET g_status = 'aborted';
     ELSEIF remaining_players = 0 THEN
         UPDATE game_stats
-        SET g_status = 'not active',
-		  p_turn = 'Y';
+        SET g_status = 'not active', p_turn = 'Y';
+        REPLACE INTO board SELECT * FROM board_empty;
     END IF;
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE duplicate_piece(
+    IN from_x INT,
+    IN from_y INT,
+    IN to_x INT,
+    IN to_y INT,
+    IN s_color CHAR(1) -- 'Y' for yellow, 'R' for red
+)
+BEGIN
+    -- Check if the destination is empty (NULL)
+    IF EXISTS (
+        SELECT 1 FROM board WHERE x = to_x AND y = to_y AND piece_color IS NULL
+    ) AND EXISTS (
+        SELECT 1 FROM board WHERE x = from_x AND y = from_y AND piece_color = s_color
+    )THEN
+        -- Duplicate the piece to the new position
+        UPDATE board
+        SET piece_color = s_color
+        WHERE x = to_x AND y = to_y;
+
+        -- Infect adjacent opponent places
+        UPDATE board
+        SET piece_color = s_color
+        WHERE ABS(x - to_x) <= 1 AND ABS(y - to_y) <= 1 AND piece_color IS NOT NULL AND piece_color != s_color;
+
+        -- Update the players' score
+        UPDATE players
+        SET score = (
+            SELECT COUNT(*) FROM board WHERE piece_color = 'Y'
+        )
+        WHERE piece_color = 'Y';
+
+        UPDATE players
+        SET score = (
+            SELECT COUNT(*) FROM board WHERE piece_color = 'R'
+        )
+        WHERE piece_color = 'R';
+
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Destination is not empty';
+    END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE jump_piece(
+    IN from_x INT,
+    IN from_y INT,
+    IN to_x INT,
+    IN to_y INT,
+    IN s_color CHAR(1) -- 'Y' for yellow, 'R' for red
+)
+BEGIN
+    -- Check if the destination is empty (NULL) and the source has the correct piece
+    IF EXISTS (
+        SELECT 1 FROM board WHERE x = to_x AND y = to_y AND piece_color IS NULL
+    ) AND EXISTS (
+        SELECT 1 FROM board WHERE x = from_x AND y = from_y AND piece_color = s_color
+    ) THEN
+        -- Move the piece to the new position
+        UPDATE board
+        SET piece_color = s_color
+        WHERE x = to_x AND y = to_y;
+
+        -- Clear the original position
+        UPDATE board
+        SET piece_color = NULL
+        WHERE x = from_x AND y = from_y;
+
+        -- Infect adjacent opponent pieces near the destination
+        UPDATE board
+        SET piece_color = s_color
+        WHERE ABS(x - to_x) <= 1 AND ABS(y - to_y) <= 1 
+              AND piece_color IS NOT NULL 
+              AND piece_color != s_color;
+
+        -- Update the players' score
+        UPDATE players
+        SET score = (
+            SELECT COUNT(*) FROM board WHERE piece_color = 'Y'
+        )
+        WHERE piece_color = 'Y';
+
+        UPDATE players
+        SET score = (
+            SELECT COUNT(*) FROM board WHERE piece_color = 'R'
+        )
+        WHERE piece_color = 'R';
+
+    ELSE
+        -- Signal an error for invalid move
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Invalid jump: Either destination is not empty or source is incorrect';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+
 

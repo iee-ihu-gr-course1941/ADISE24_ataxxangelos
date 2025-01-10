@@ -25,7 +25,7 @@ switch ($r=array_shift($request)) {
             case '':
             case null: handle_board($method,$input);
                         break;
-            case 'piece': handle_piece($method, $request[0],$request[1],$input);
+            case 'piece': handle_piece($method, $input);
                         break;
             }
             break;
@@ -33,7 +33,7 @@ switch ($r=array_shift($request)) {
 			if(sizeof($request)==0) {handle_status($method, $input);}
 			else {header("HTTP/1.1 404 Not Found");}
 			break;
-	case 'players': handle_player($method, $request,$input);
+	case 'players': handle_player($method, $request, $input);
 			    break;
 	default:  header("HTTP/1.1 404 Not Found");
                         exit;
@@ -46,22 +46,28 @@ function handle_board($method,$input) {
             echo json_encode(['board' => $board]);
     } else if ($method=='PUT') {
             //reset_board();
-            //show_board($input);
     } else {
         header('HTTP/1.1 405 Method Not Allowed');
     }
     
 }
 
-function handle_piece($method, $x,$y,$input) {
-    if($method=='GET') {
-        show_piece($x,$y);
-    } else if ($method=='PUT') {
-        move_piece($x,$y,$input['x'],$input['y'],  $input['token']);
-    }    
-
-
+function handle_piece($method, $input) {
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    if ($method == 'PUT') {
+        if (isset($input['movedata'])) { // Extract the 'movedata' object
+            $moveData = $input['movedata'];
+            move_piece($moveData['x1'], $moveData['y1'], $moveData['x2'], $moveData['y2'], $moveData['color'], $moveData['token']);
+        } else {
+            header('HTTP/1.1 400 Bad Request');
+            echo json_encode(["error" => "Invalid request payload."]);
+        }
+    } else {
+        header('HTTP/1.1 405 Method Not Allowed');
+    }
 }
+
 
 function handle_player($method, $input) {
     if ($method == 'GET') {
@@ -82,6 +88,8 @@ function handle_player($method, $input) {
         $username = $input['username'];
         remove_player($username);
         echo json_encode(['message' => 'Player removed successfully']);
+    } else {
+        header('HTTP/1.1 405 Method Not Allowed');
     }
 }
 
@@ -102,8 +110,12 @@ function handle_status($method, $input){
             break;
             case 'start': begin_round();
             break;
+            case 'ended': game_over($input['victory']);
+            break;
         }
         echo json_encode(['message' => 'Game Status changed.']);
+    }else {
+        header('HTTP/1.1 405 Method Not Allowed');
     }
 }
 
