@@ -7,6 +7,8 @@
 
 Welcome to the Ataxx game repository! This project is an implementation of the Ataxx board game, designed to be played via a web interface using REST API interactions. The game supports two players, each controlling pieces on the board with the objective of capturing as much territory as possible.
 
+Link to the game: users.iee.ihu.gr/~iee2019002/game.html
+
 ---
 
 ## Game Overview
